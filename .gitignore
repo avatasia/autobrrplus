@@ -50,3 +50,11 @@ cpu.pprof
 
 # Preserve files
 !.gitkeep
+go1.25.5.linux-amd64.tar.gz
+go1.25.tar.gz
+web/package.json
+web/pnpm-lock.yaml
+web/package.json
+web/pnpm-lock.yaml
+web/pnpm-lock.yaml
+web/pnpm-lock.yaml

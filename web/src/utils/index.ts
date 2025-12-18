@@ -99,7 +99,7 @@ export const get = <T> (obj: T, path: string|Array<any>, defValue?: string) => {
 };
 
 const UNITS = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte', 'petabyte']
-const BYTES_PER_KB = 1000
+const BYTES_PER_KB = 1024
 
 
 /**
@@ -122,7 +122,8 @@ export function humanFileSize(sizeBytes: number | bigint): string {
     style: 'unit',
     unit: UNITS[u],
     unitDisplay: 'short',
-    maximumFractionDigits: 1,
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
   }).format(size)
 }
 

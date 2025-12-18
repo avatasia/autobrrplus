@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -601,9 +602,10 @@ func (f *Filter) CheckFilter(r *Release) (*RejectionReasons, bool) {
 	if len(f.MatchReleaseTypes) > 0 && !containsSlice(r.Category, f.MatchReleaseTypes) {
 		f.RejectReasons.Add("release type", r.Category, f.MatchReleaseTypes)
 	}
-
-	if f.MinSize != "" && !f.checkSizeFilter(r) {
-		f.RejectReasons.Add("min size", r.Size, f.MinSize)
+	if !slices.Contains(r.Audio, "Log100") {
+		if f.MinSize != "" && !f.checkSizeFilter(r) {
+			f.RejectReasons.Add("min size", r.Size, f.MinSize)
+		}
 	}
 
 	if f.MaxSize != "" && !f.checkSizeFilter(r) {

@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -211,13 +212,16 @@ func (repo *ReleaseRepo) findReleases(ctx context.Context, tx *Tx, params domain
 	if params.Cursor > 0 {
 		whereQueryBuilder = append(whereQueryBuilder, sq.Lt{"r.id": params.Cursor})
 	}
-
+	repo.log.Debug().Msgf("Search: %s", params.Search)
 	if params.Search != "" {
 		search := strings.TrimSpace(params.Search)
 		for dbField, regex := range reservedSearch {
 			if reskey := regex.FindAllStringSubmatch(search, -1); len(reskey) != 0 {
 				filter := sq.Or{}
 				for _, found := range reskey {
+					if found[1] == "cd" {
+						whereQueryBuilder = append(whereQueryBuilder, repo.db.ILike("r.audio", "%Log100%"))
+					}
 					filter = append(filter, repo.db.ILike(dbField, strings.ReplaceAll(strings.Trim(strings.Trim(found[1], `"`), `'`), ".", "_")+"%"))
 				}
 
@@ -489,6 +493,10 @@ func (repo *ReleaseRepo) findReleases(ctx context.Context, tx *Tx, params domain
 		// only add ActionStatus if it's not empty
 		if ras.ID > 0 {
 			rls.ActionStatus = append(rls.ActionStatus, ras)
+		}
+
+		if slices.Contains(rls.Audio, "Log100") {
+			rls.TorrentName += " Log100"
 		}
 
 		resp.Data = append(resp.Data, &rls)

@@ -6,6 +6,7 @@ package action
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/autobrr/autobrr/internal/domain"
@@ -65,6 +66,12 @@ func (s *service) qbittorrent(ctx context.Context, action *domain.Action, releas
 	options, err := s.prepareQbitOptions(action)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not prepare options")
+	}
+	s.log.Trace().Msgf("release audio: %+v", release.Audio)
+
+	if slices.Contains(release.Audio, "Log100") {
+		options["category"] = "tmp"
+		options["tags"] = "log100"
 	}
 
 	s.log.Trace().Msgf("action qBittorrent options: %+v", options)
